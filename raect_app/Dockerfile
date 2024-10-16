@@ -1,19 +1,26 @@
-# Step 1: Build the React app
-FROM node:14 as build
+# Use the official node image.
+FROM node:16
 
-WORKDIR /app
+# Update npm to the latest version
+RUN npm install -g npm@latest
 
-COPY package.json package-lock.json ./
-RUN npm install
+# Create and change to the app directory.
+WORKDIR /usr/src/app
 
+# Copy application dependency manifests to the container image.
+COPY package*.json ./
+
+# Install production dependencies.
+RUN npm install --only=production
+
+# Copy local code to the container image.
 COPY . .
+
+# Build the app
 RUN npm run build
 
-# Step 2: Serve the app using a lightweight web server
-FROM nginx:alpine
+# Expose the port the app runs on
+EXPOSE 3000
 
-COPY --from=build /app/build /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Run the app
+CMD ["npm", "start"]
