@@ -1,10 +1,7 @@
-# Use the official node image.
+# Use the official node image
 FROM node:16
 
-# Update npm to the latest version
-RUN npm install -g npm@latest
-
-# Create and change to the app directory.
+# Set the working directory
 WORKDIR /usr/src/app
 
 # Copy application dependency manifests to the container image.

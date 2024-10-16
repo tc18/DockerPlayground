@@ -1,44 +1,56 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-function SignUp({ addUser }) {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
+const SignUp = ({ fetchUsers }) => {
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+  });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (name && email) {
-            addUser({ name, email });
-            setName('');
-            setEmail('');
-        }
-    };
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <h2>Sign Up</h2>
-            <label>
-                Name:
-                <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-            </label>
-            <br />
-            <label>
-                Email:
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-            </label>
-            <br />
-            <button type="submit">Sign Up</button>
-        </form>
-    );
-}
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:5000/users', formData);
+      fetchUsers(); // Fetch the updated list of users after a successful sign-up
+      setFormData({ username: '', email: '' });
+    } catch (error) {
+      console.error('Error signing up:', error);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Sign Up</h2>
+      <div>
+        <label>Username: </label>
+        <input
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <label>Email: </label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <button type="submit">Sign Up</button>
+    </form>
+  );
+};
 
 export default SignUp;
